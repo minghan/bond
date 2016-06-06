@@ -56,43 +56,70 @@ namespace UnitTest.Epoxy
             await transport.StopAsync();
         }
 
+        class LogAddTheThings : LogHandler
+        {
+            public void Handle(LogSeverity severity, Exception exception, string format, object[] args)
+            {
+                var f = string.Format(format, args);
+                Console.WriteLine(f);
+                if (exception != null)
+                {
+                    Console.WriteLine(exception);
+                    Console.WriteLine();
+                }
+            }
+        }
+
         [Test]
         public async Task ConnectedEvent_SetDisconnectError_DisconnectsConnection()
         {
-            const int DisconnectErrorCode = 100;
-            const string DisconnectMessage = "Go away!";
-
-            EpoxyTransport transport = MakeTransport();
-            var listener = transport.MakeListener(localhostEndpoint);
-
-            var connectedEventDone = new ManualResetEventSlim(initialState: false);
-            listener.Connected += (sender, args) =>
-            {
-                args.DisconnectError = new Error {error_code = DisconnectErrorCode, message = DisconnectMessage };
-                connectedEventDone.Set();
-            };
-
-            var disconnectedEventDone = new ManualResetEventSlim(initialState: false);
-            listener.Disconnected += (sender, args) =>
-            {
-                disconnectedEventDone.Set();
-            };
-
-            await listener.StartAsync();
-
             try
             {
-                await transport.ConnectToAsync(listener.ListenEndpoint);
-                Assert.Fail("Expected exception to be thrown.");
-            }
-            catch (EpoxyProtocolErrorException pex)
-            {
-                Assert.That(pex.Message, Is.StringContaining("rejected"));
-                Assert.IsNotNull(pex.Details);
+                Log.SetHandler(new LogAddTheThings());
 
-                var errorDetails = pex.Details.Deserialize();
-                Assert.AreEqual(DisconnectErrorCode, errorDetails.error_code);
-                Assert.AreEqual(DisconnectMessage, errorDetails.message);
+                const int DisconnectErrorCode = 100;
+                const string DisconnectMessage = "Go away!";
+
+                EpoxyTransport transport = MakeTransport();
+                var listener = transport.MakeListener(localhostEndpoint);
+
+                var connectedEventDone = new ManualResetEventSlim(initialState: false);
+                listener.Connected += (sender, args) =>
+                {
+                    args.DisconnectError = new Error
+                    {
+                        error_code = DisconnectErrorCode,
+                        message = DisconnectMessage
+                    };
+                    connectedEventDone.Set();
+                };
+
+                var disconnectedEventDone = new ManualResetEventSlim(initialState: false);
+                listener.Disconnected += (sender, args) =>
+                {
+                    disconnectedEventDone.Set();
+                };
+
+                await listener.StartAsync();
+
+                try
+                {
+                    await transport.ConnectToAsync(listener.ListenEndpoint);
+                    Assert.Fail("Expected exception to be thrown.");
+                }
+                catch (EpoxyProtocolErrorException pex)
+                {
+                    Assert.That(pex.Message, Is.StringContaining("rejected"));
+                    Assert.IsNotNull(pex.Details);
+
+                    var errorDetails = pex.Details.Deserialize();
+                    Assert.AreEqual(DisconnectErrorCode, errorDetails.error_code);
+                    Assert.AreEqual(DisconnectMessage, errorDetails.message);
+                }
+            }
+            finally
+            {
+                Log.RemoveHandler();
             }
         }
 
