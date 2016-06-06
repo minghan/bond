@@ -21,22 +21,9 @@
         BOND_TOKEN:
             secure: 30K3L1s8erWFnnS/Iyb2LP7kiGZBr/GzA24Y82mCsGMBjzSUyk7uV7MvZ3NepNvB
         matrix:
-            - BOND_BUILD: Python
-              BOND_VS: "Visual Studio 14 2015"
-              BOND_BOOST: 59
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 14 2015 Win64"
-              BOND_BOOST: 59
             - BOND_BUILD: C#
               BOND_OUTPUT: Properties
               BOND_CONFIG: Debug
-            - BOND_BUILD: Doc
-            - BOND_BUILD: C++
-              BOND_VS: "Visual Studio 12 2013"
-              BOND_BOOST: 55
-            - BOND_BUILD: C#
-              BOND_OUTPUT: Fields
-              BOND_CONFIG: Fields
 
     install:
         - ps: >-
