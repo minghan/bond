@@ -73,9 +73,9 @@ namespace UnitTest.Epoxy
         [Test]
         public async Task ConnectedEvent_SetDisconnectError_DisconnectsConnection()
         {
-            try
-            {
-                Log.SetHandler(new LogAddTheThings());
+            //try
+            //{
+                //Log.SetHandler(new LogAddTheThings());
 
                 const int DisconnectErrorCode = 100;
                 const string DisconnectMessage = "Go away!";
@@ -116,11 +116,11 @@ namespace UnitTest.Epoxy
                     Assert.AreEqual(DisconnectErrorCode, errorDetails.error_code);
                     Assert.AreEqual(DisconnectMessage, errorDetails.message);
                 }
-            }
-            finally
-            {
-                Log.RemoveHandler();
-            }
+            //}
+            //finally
+            //{
+            //    Log.RemoveHandler();
+            //}
         }
 
         [Test]
