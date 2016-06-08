@@ -436,6 +436,8 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (Exception ex) when (state != State.Disconnecting && state != State.Disconnected)
                 {
+                    Console.WriteLine("UNHANDLED 1: {0}", ex);
+
                     Log.Error(ex, "{0}.{1} Unhandled exception. Current state: {2}",
                         this, nameof(ConnectionLoop), state);
 
@@ -445,6 +447,8 @@ namespace Bond.Comm.Epoxy
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine("UNHANDLED 2: {0}", ex);
+
                     Log.Error(ex, "{0}.{1} Unhandled exception during shutdown. Abandoning connection. Current state: {2}",
                         this, nameof(ConnectionLoop), state);
                     break; // the while loop
