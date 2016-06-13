@@ -13,7 +13,7 @@ env:
     - BOND_LANG=cs
     - BOND_LANG=py-clang
     - BOND_LANG=py-gcc
-    - BOND_GHC_VERSION=-7.8.4
+    - BOND_GHC_VERSION=-7.10.3
     - BOND_GHC_VERSION=-7.6.3
 addons:
   apt:
@@ -25,7 +25,7 @@ addons:
         - g++-4.8
         - libboost1.55-all-dev
         - cabal-install-1.22
-        - ghc-7.8.4
+        - ghc-7.10.3
         - ghc-7.6.3
         - ghc
 matrix:
@@ -38,7 +38,7 @@ matrix:
       env: BOND_LANG=py-clang
     # don't test non-default versions of GHC on OSX
     - os: osx
-      env: BOND_GHC_VERSION=-7.8.4
+      env: BOND_GHC_VERSION=-7.10.3
     - os: osx
       env: BOND_GHC_VERSION=-7.6.3
     # on OS X g++ and clang++ are the same compiler
@@ -80,7 +80,7 @@ script:
     - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export BOND_PYTHON_TARGETS="python_compatibility_test python_unit_test python_extension compatibility_test" BOND_PYTHON_TESTS=".*python.*"; fi
     - if [[ $BOND_LANG == py* ]]; then make $BOND_PYTHON_TARGETS; fi
     - if [[ $BOND_LANG == py* ]]; then ctest --tests-regex $BOND_PYTHON_TESTS --output-on-failure; fi
-    - if [ "$BOND_GHC_VERSION" != "" ]; then make gbc-tests; fi
+    - if [ "$BOND_GHC_VERSION" != "" ]; then travis_wait 40 make gbc-tests; fi
     - cd ..
     - if [ "$BOND_LANG" == "cs" ]; then xbuild /p:Configuration=Debug cs/cs.sln; fi
     - if [ "$BOND_LANG" == "cs" ]; then xbuild /p:Configuration=Fields cs/cs.sln; fi
